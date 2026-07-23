@@ -27,6 +27,7 @@ STOK_RE = re.compile(r";stok=([a-zA-Z0-9]+)/")
 FIRMWARE_RE = re.compile(r"var\s+firmwareVersion\s*=\s*'([^']+)'")
 SERIAL_RE = re.compile(r'myid="Device_Serial_Number_text">([^<]+)<')
 AP_NAME_RE = re.compile(r'repSpecHTML\("([^"]+)"\)')
+LAN_MAC_RE = re.compile(r'id="mac_lan"[^>]*>\s*([0-9A-Fa-f:]{17})\s*<')
 
 # wifi0 = 2.4GHz radio, wifi1 = 5GHz radio on this hardware (confirmed
 # from channel numbers: 5 vs 177).
@@ -292,7 +293,12 @@ class WAX210Client:
         if m:
             ap_name = m.group(1)
 
-        info = {"firmware": firmware, "serial_number": serial_number, "ap_name": ap_name}
+        lan_mac = None
+        m = LAN_MAC_RE.search(html)
+        if m:
+            lan_mac = m.group(1).lower()
+
+        info = {"firmware": firmware, "serial_number": serial_number, "ap_name": ap_name, "lan_mac": lan_mac}
         self._static_info_cache = info
         return info
 
@@ -375,6 +381,18 @@ class WAX210Client:
             if len(last_row) > 1:
                 cpu_pct = last_row[1]
 
+        radio_channels: dict[str, Optional[int]] = {}
+        for wifinet in overview.get("wifinets", []):
+            band = DEVICE_BAND.get(wifinet.get("device", ""))
+            if band:
+                try:
+                    radio_channels[band] = int(wifinet["channel"])
+                except (KeyError, TypeError, ValueError):
+                    radio_channels[band] = None
+
+        total_rx = sum(c["rx_kbytes"] for c in clients if c.get("rx_kbytes") is not None)
+        total_tx = sum(c["tx_kbytes"] for c in clients if c.get("tx_kbytes") is not None)
+
         firmware_info = self.get_device_static_info()
 
         return {
@@ -386,7 +404,12 @@ class WAX210Client:
             "uptime_s": uptime_s,
             "mem_pct": mem_pct,
             "cpu_pct": cpu_pct,
+            "channel_2_4ghz": radio_channels.get("2.4GHz"),
+            "channel_5ghz": radio_channels.get("5GHz"),
+            "total_rx_kbytes": total_rx,
+            "total_tx_kbytes": total_tx,
             "firmware": firmware_info.get("firmware"),
             "serial_number": firmware_info.get("serial_number"),
             "ap_name": firmware_info.get("ap_name"),
+            "lan_mac": firmware_info.get("lan_mac"),
         }

@@ -14,7 +14,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory, UnitOfTime
+from homeassistant.const import EntityCategory, UnitOfInformation, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -83,6 +83,36 @@ SENSOR_DESCRIPTIONS: tuple[WAX210SensorDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data: _compute_last_boot(data["uptime_s"]),
         attrs_fn=lambda data: {"uptime_seconds": data["uptime_s"]},
+    ),
+    WAX210SensorDescription(
+        key="2_4ghz_channel",
+        translation_key="2_4ghz_channel",
+        icon="mdi:wifi",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda data: data.get("channel_2_4ghz"),
+    ),
+    WAX210SensorDescription(
+        key="5ghz_channel",
+        translation_key="5ghz_channel",
+        icon="mdi:wifi",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda data: data.get("channel_5ghz"),
+    ),
+    WAX210SensorDescription(
+        key="total_rx_kbytes",
+        translation_key="total_rx_kbytes",
+        icon="mdi:download-network",
+        native_unit_of_measurement=UnitOfInformation.KILOBYTES,
+        state_class=SensorStateClass.MEASUREMENT,
+        value_fn=lambda data: data.get("total_rx_kbytes"),
+    ),
+    WAX210SensorDescription(
+        key="total_tx_kbytes",
+        translation_key="total_tx_kbytes",
+        icon="mdi:upload-network",
+        native_unit_of_measurement=UnitOfInformation.KILOBYTES,
+        state_class=SensorStateClass.MEASUREMENT,
+        value_fn=lambda data: data.get("total_tx_kbytes"),
     ),
     WAX210SensorDescription(
         # Numeric companion with state_class=total_increasing for anyone

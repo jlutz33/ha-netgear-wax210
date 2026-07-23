@@ -7,6 +7,7 @@ from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import WAX210AuthError, WAX210Client, WAX210ConnectionError
@@ -61,4 +62,6 @@ class WAX210Coordinator(DataUpdateCoordinator):
             info["sw_version"] = data["firmware"]
         if data.get("serial_number"):
             info["serial_number"] = data["serial_number"]
+        if data.get("lan_mac"):
+            info["connections"] = {(CONNECTION_NETWORK_MAC, data["lan_mac"])}
         return info

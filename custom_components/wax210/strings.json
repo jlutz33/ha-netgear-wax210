@@ -36,7 +36,11 @@
       "cpu_load": { "name": "CPU load" },
       "memory_load": { "name": "Memory load" },
       "last_boot": { "name": "Last boot" },
-      "uptime_seconds": { "name": "Uptime (seconds)" }
+      "uptime_seconds": { "name": "Uptime (seconds)" },
+      "2_4ghz_channel": { "name": "2.4 GHz channel" },
+      "5ghz_channel": { "name": "5 GHz channel" },
+      "total_rx_kbytes": { "name": "Total received" },
+      "total_tx_kbytes": { "name": "Total transmitted" }
     },
     "binary_sensor": {
       "network_status": { "name": "Network status" }

@@ -8,7 +8,9 @@ from typing import Any
 from homeassistant.components.device_tracker import ScannerEntity, SourceType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -63,6 +65,7 @@ class WAX210DeviceTracker(ScannerEntity):
         self.hass = hass
         self._mac = mac
         self._attr_unique_id = f"wax210_{mac}"
+        self._last_via_entry_id: str | None = None
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
@@ -87,6 +90,16 @@ class WAX210DeviceTracker(ScannerEntity):
             v for v in self.hass.data.get(DOMAIN, {}).values()
             if isinstance(v, WAX210Coordinator)
         ]
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        _, coordinator = self._active_client_data()
+        if coordinator is not None:
+            self._last_via_entry_id = coordinator.entry.entry_id
+        info = DeviceInfo(connections={(CONNECTION_NETWORK_MAC, self._mac)})
+        if self._last_via_entry_id is not None:
+            info["via_device"] = (DOMAIN, self._last_via_entry_id)
+        return info
 
     def _active_client_data(self) -> tuple[dict[str, Any], WAX210Coordinator | None]:
         """Client data + coordinator for the AP the device is currently on."""
