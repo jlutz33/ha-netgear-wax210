@@ -1,0 +1,45 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add NETGEAR WAX210",
+        "description": "Enter the AP's local IP address and admin login. This uses the AP's own local web UI/API, not SNMP or the cloud.",
+        "data": {
+          "host": "Host (IP address)",
+          "username": "Username",
+          "password": "Password",
+          "verify_ssl": "Verify SSL certificate"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Login failed. Check the username and password.",
+      "cannot_connect": "Could not connect to the AP. Check the host address.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This AP is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Poll interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "connected_clients": { "name": "Connected clients" },
+      "cpu_load": { "name": "CPU load" },
+      "memory_load": { "name": "Memory load" },
+      "last_boot": { "name": "Last boot" },
+      "uptime_seconds": { "name": "Uptime (seconds)" }
+    },
+    "binary_sensor": {
+      "network_status": { "name": "Network status" }
+    }
+  }
+}
