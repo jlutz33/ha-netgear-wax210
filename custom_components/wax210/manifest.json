@@ -3,8 +3,8 @@
   "name": "NETGEAR WAX210",
   "version": "1.0.0",
   "config_flow": true,
-  "documentation": "https://github.com/yourusername/ha-wax210",
+  "documentation": "https://github.com/jlutz33/ha-netgear-wax210",
   "iot_class": "local_polling",
   "requirements": ["requests>=2.31"],
-  "codeowners": ["@yourusername"]
+  "codeowners": ["@jlutz33"]
 }
