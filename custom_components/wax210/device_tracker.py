@@ -93,10 +93,13 @@ class WAX210DeviceTracker(ScannerEntity):
 
     @property
     def device_info(self) -> DeviceInfo:
-        _, coordinator = self._active_client_data()
+        data, coordinator = self._active_client_data()
         if coordinator is not None:
             self._last_via_entry_id = coordinator.entry.entry_id
-        info = DeviceInfo(connections={(CONNECTION_NETWORK_MAC, self._mac)})
+        info = DeviceInfo(
+            connections={(CONNECTION_NETWORK_MAC, self._mac)},
+            default_name=data.get("hostname") or self._mac,
+        )
         if self._last_via_entry_id is not None:
             info["via_device"] = (DOMAIN, self._last_via_entry_id)
         return info
