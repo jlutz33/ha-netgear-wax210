@@ -19,16 +19,6 @@ V1.1.0.36.
   management/LAN interface (there's no true WAN port on this hardware),
   with ipaddr/gwaddr/dns as attributes
 
-## This is a fresh start, not a migration
-
-Per your call: this does NOT try to preserve the old MQTT-published
-entities' history. Those lived under the `mqtt` integration; these live
-under a new `wax210` integration with entirely different unique_ids, so
-HA will create brand-new entities. Once you've confirmed this is
-working, go delete the old MQTT-discovered entities/devices from
-Settings > Devices & Services > MQTT, and decommission the Pi script
-(stop + disable `wax210-monitor.service`).
-
 ## Install
 
 1. Copy the `custom_components/wax210/` folder into your HA config
