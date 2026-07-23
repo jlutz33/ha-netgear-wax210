@@ -10,11 +10,20 @@ V1.1.0.36.
 
 ### Per AP (each AP is added as its own config entry)
 
+The AP appears as a device in HA with its LAN MAC address, firmware
+version, and serial number populated in the Device info card. Its device
+page shows a "Connected devices" section listing every WiFi client
+currently associated with it.
+
 - `sensor.<name>_connected_clients` -- count, with a `clients` attribute
   listing every associated client (mac, ip, hostname, os, rssi,
   rx_kbytes, tx_kbytes, mode, ssid, band, channel)
 - `sensor.<name>_cpu_load` -- %, from the AP's own realtime load endpoint
 - `sensor.<name>_memory_load` -- %, computed from memtotal/memavail
+- `sensor.<name>_2_4ghz_channel` -- current 2.4 GHz radio channel (diagnostic)
+- `sensor.<name>_5ghz_channel` -- current 5 GHz radio channel (diagnostic)
+- `sensor.<name>_total_received` -- total kB received across all connected clients
+- `sensor.<name>_total_transmitted` -- total kB transmitted across all connected clients
 - `sensor.<name>_last_boot` -- timestamp (diagnostic)
 - `sensor.<name>_uptime_seconds` -- seconds (diagnostic)
 - `binary_sensor.<name>_network_status` -- the AP's own bridged
@@ -34,8 +43,15 @@ V1.1.0.36.
   APs configured, a device roaming between them stays `home` the whole
   time -- there is only one tracker entity per MAC, not one per AP.
 
+  Each client appears as its own HA device (named by hostname or MAC),
+  linked to the AP it's currently connected to via HA's device registry.
+
   To use these for presence detection, go to Settings > People, edit a
   person, and link their phone's tracker entity to that person.
+
+> **Note:** If you delete client devices from the HA device registry,
+> they won't recreate until the next HA restart (the in-memory tracking
+> set resets on restart).
 
 ## Install
 
@@ -65,10 +81,12 @@ V1.1.0.36.
 - The login POST needs `Origin`/`Referer` headers and an `is_login=1`
   cookie, or the AP returns a bare 403 that looks exactly like a
   brute-force lockout but isn't one.
-- Firmware version isn't a JSON endpoint at all -- it's scraped via
-  regex from the rendered HTML of the System > Firmware page.
+- Firmware version, serial number, and LAN MAC aren't JSON endpoints --
+  they're scraped via regex from the rendered HTML of the device info page.
 
 ## Not yet built (possible follow-ups)
 
 - Re-auth flow if the admin password changes after setup (currently
   you'd need to remove and re-add the integration entry).
+- Client device tracker entities recreate after HA restart rather than
+  immediately after being deleted from the device registry.
